@@ -2,75 +2,21 @@ import java.util.*;
 import java.beans.Customizer;
 import java.io.*;
 
+class pair implements Comparable<pair> {
+    int t;
+    int tp;
+
+    pair(int t, int tp) {
+        this.t = t;
+        this.tp = tp;
+    }
+
+    public int compareTo(pair o) {
+        return this.tp - o.tp;
+    }
+}
+
 public class minAvgTime {
-
-    // static void go() {
-    // int n = in.nextInt();
-    // Customer[] c = new Customer[n];
-    // for (int i = 0; i < n; i++) {
-    // c[i] = new Customer(in.nextInt(), in.nextInt());
-    // }
-    // Arrays.sort(c, Customer.Order.ByT.ascending());
-
-    // PriorityQueue<Customer> q = new PriorityQueue<Customer>(n,
-    // Customer.Order.ByL.ascending());
-    // long time = c[0].t;
-    // int idx = 0;
-    // while (idx < n && c[idx].t <= time) {
-    // q.add(c[idx]);
-    // idx++;
-    // }
-
-    // long wait = 0;
-    // while (q.size() > 0) {
-    // Customer next = q.poll();
-    // time += next.l;
-    // wait += time - next.t;
-
-    // if (idx < n && q.size() == 0 && time < c[idx].t) {
-    // time = c[idx].t;
-    // }
-    // while (idx < n && c[idx].t <= time) {
-    // q.add(c[idx]);
-    // idx++;
-    // }
-    // }
-    // out.println(wait / n);
-    // }
-
-    // public static class Customer implements Comparable<Customer> {
-    // public Long t, l;
-
-    // public Customer(long t1, long l1) {
-    // this.t = t1;
-    // this.l = l1;
-    // }
-    // public compareTo{
-
-    // }
-    // public static enum Order implements Comparator<Customer> {
-    // ByT() {
-    // public int compare(Customer c1, Customer c2) {
-    // return c1.t.compareTo(c2.t);
-    // }
-    // },
-    // ByL() {
-    // public int compare(Customer c1, Customer c2) {
-    // return c1.l.compareTo(c2.l);
-    // }
-    // };
-
-    // public abstract int compare(Customer c1, Customer c2);
-
-    // public Comparator ascending() {
-    // return this;
-    // }
-
-    // public Comparator descending() {
-    // return Collections.reverseOrder(this);
-    // }
-    // }
-    // }
 
     public static void main(String[] args) {
         Scanner scn = new Scanner(System.in);
@@ -82,24 +28,37 @@ public class minAvgTime {
             time.add(scn.nextInt());
             arr.add(time);
         }
-        Collections.sort(arr, new Comparator<ArrayList<Integer>>() {
+        Collections.sort(arr, new Comparator<List<Integer>>() {
             @Override
-            public int compare(ArrayList<Integer> o1, ArrayList<Integer> o2) {
-                return o1.get(1).compareTo(o2.get(1));
+            public int compare(List<Integer> o1, List<Integer> o2) {
+                return o1.get(0).compareTo(o2.get(0));
             }
         });
-        int sum = 0;
-        int currTime = 0;
-        for (int j = 0; j < n; j++) {
-            if (arr.get(j).get(0) > currTime) {
-                currTime += arr.get(j).get(0);
+        long sum = (long) 0;
+        long currTime = (long) 0;
+        PriorityQueue<pair> pq = new PriorityQueue<>();
+
+        while (!pq.isEmpty() || !arr.isEmpty()) {
+            if (pq.isEmpty()) {
+                pq.add(new pair(arr.get(0).get(0), arr.get(0).get(1)));
+                arr.remove(0);
+            } else {
+                pair x = pq.poll();
+                if (x.t > currTime) {
+                    currTime = (long) x.t;
+                }
+
+                long avgTime = currTime + (long) x.tp - (long) x.t;
+                currTime = currTime + (long) x.tp;
+                sum += avgTime;
+
+                while (arr.size() > 0 && arr.get(0).get(0) <= currTime) {
+                    pq.add(new pair(arr.get(0).get(0), arr.get(0).get(1)));
+                    arr.remove(0);
+                }
             }
-            int avgTime = currTime + arr.get(j).get(1) - arr.get(j).get(0);
-            currTime += arr.get(j).get(1);
-            sum += avgTime;
-            // System.out.println(avgTime);
         }
-        System.out.println(sum / n);
+        System.out.println(sum / (long) n);
     }
 
 }
